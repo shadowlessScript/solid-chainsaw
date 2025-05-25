@@ -87,36 +87,20 @@ WSGI_APPLICATION = 'main.wsgi.app'
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-if os.getenv('SERVER_DEBUG_MODE') == 'True':
 
-    tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': tmpPostgres.path.replace('/', ''),
-            'USER': tmpPostgres.username,
-            'PASSWORD': tmpPostgres.password,
-            'HOST': tmpPostgres.hostname,
-            'PORT': 5432,
-        }
+tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': tmpPostgres.path.replace('/', ''),
+        'USER': tmpPostgres.username,
+        'PASSWORD': tmpPostgres.password,
+        'HOST': tmpPostgres.hostname,
+        'PORT': 5432,
     }
-else:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': os.getenv('DBNAME'),
-            'USER': os.environ.get('DBUSERNAME'),
-            'PASSWORD': os.environ.get('DBPASSWORD'),
-            'ATOMIC_REQUESTS': True,
-            'OPTIONS': {
-                'options': '-c search_path={}'.format(os.environ.get('DBSCHEMA'))
-            },
-            'HOST': str(os.environ.get('DBHOST')),
-            'PORT': int(os.environ.get('DBPORT')),
-
-        }
-    }
+}
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
