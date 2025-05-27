@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'acl',
-    'api'
+    'api',
+    'cloudinary_storage',
 ]
 
 MIDDLEWARE = [
@@ -190,8 +191,12 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
+    'API_KEY': os.getenv('API_KEY'),
+    'API_SECRET': os.getenv('API_SECRET')
+}
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATICFILES_DIRS = (STATIC_PATH,)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
