@@ -207,7 +207,7 @@ REST_FRAMEWORK = {
     )
 }
 
-X_FRAME_OPTIONS = ['ALLOW-FROM https://127.0.0.1/', 'ALLOW-FROM https://defe-2.vercel.app/']
+X_FRAME_OPTIONS = 'ALLOW-FROM https://127.0.0.1/'
 CORS_ALLOWED_ORIGINS = [
     'https://defe-2.vercel.app'
 ]
