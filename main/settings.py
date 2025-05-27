@@ -207,67 +207,66 @@ REST_FRAMEWORK = {
     )
 }
 
-# X_FRAME_OPTIONS = ['ALLOW-FROM https://127.0.0.1/', 'ALLOW-FROM https://defe-2.vercel.app/']
-# CORS_ALLOWED_ORIGINS = [
-#     'https://defe-2.vercel.app'
-# ]
-# TOKEN_SECRET_CODE = 'county47?Refined'
-# TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
-
-# CORS_ORIGIN_ALLOW_ALL = True
-# CORS_ALLOW_HEADERS = [
-#     'accept',
-#     'accept-encoding',
-#     'authorization',
-#     'Authorization',
-#     'content-type',
-#     'dnt',
-#     'origin',
-#     'user-agent',
-#     'x-csrftoken',
-#     'x-requested-with',
-#     'Access-Control-Allow-Origin: https://defe-2.vercel.app/',
-    
-# ]
-# myproject/settings.py
-
-# X_FRAME_OPTIONS: For clickjacking protection. 'DENY' is usually good for APIs.
-# If you genuinely need to allow embedding, research more advanced solutions.
-X_FRAME_OPTIONS = 'DENY'
-
-# CORS_ALLOWED_ORIGINS: List of origins allowed to make cross-origin requests.
-# Ensure this exactly matches your frontend's deployed URL.
+X_FRAME_OPTIONS = ['ALLOW-FROM https://127.0.0.1/', 'ALLOW-FROM https://defe-2.vercel.app/']
 CORS_ALLOWED_ORIGINS = [
-    'https://defe-2.vercel.app',
-    # Add your local development frontend URL if applicable, e.g.:
-    # 'http://localhost:3000',
-    # 'http://127.0.0.1:3000',
+    'https://defe-2.vercel.app'
 ]
-
-# CORS_ORIGIN_ALLOW_ALL: Set to False (or remove, as False is default)
-# if you are using CORS_ALLOWED_ORIGINS to specify allowed domains.
-# ONLY set to True if you want to allow any origin (less secure).
-CORS_ORIGIN_ALLOW_ALL = False # <--- Set this to False!
-
-# TOKEN_SECRET_CODE and TOKEN_EXPIRY are fine, unrelated to CORS.
 TOKEN_SECRET_CODE = 'county47?Refined'
 TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
 
-# CORS_ALLOW_HEADERS: List of non-standard HTTP request headers that the client is allowed to send.
-# 'authorization' is crucial if you're sending tokens (e.g., Bearer tokens).
+CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_HEADERS = [
     'accept',
     'accept-encoding',
-    'authorization', # This covers both 'Authorization' and 'authorization'
+    'authorization',
+    'Authorization',
     'content-type',
     'dnt',
     'origin',
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    # !!! IMPORTANT: The line below was incorrect and has been removed !!!
-    # 'Access-Control-Allow-Origin: https://defe-2.vercel.app/',
+    'Access-Control-Allow-Origin',    
 ]
+# myproject/settings.py
+
+# X_FRAME_OPTIONS: For clickjacking protection. 'DENY' is usually good for APIs.
+# If you genuinely need to allow embedding, research more advanced solutions.
+# X_FRAME_OPTIONS = 'DENY'
+
+# # CORS_ALLOWED_ORIGINS: List of origins allowed to make cross-origin requests.
+# # Ensure this exactly matches your frontend's deployed URL.
+# CORS_ALLOWED_ORIGINS = [
+#     'https://defe-2.vercel.app',
+#     # Add your local development frontend URL if applicable, e.g.:
+#     # 'http://localhost:3000',
+#     # 'http://127.0.0.1:3000',
+# ]
+
+# CORS_ORIGIN_ALLOW_ALL: Set to False (or remove, as False is default)
+# if you are using CORS_ALLOWED_ORIGINS to specify allowed domains.
+# ONLY set to True if you want to allow any origin (less secure).
+# CORS_ORIGIN_ALLOW_ALL = False # <--- Set this to False!
+
+# # TOKEN_SECRET_CODE and TOKEN_EXPIRY are fine, unrelated to CORS.
+# TOKEN_SECRET_CODE = 'county47?Refined'
+# TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
+
+# # CORS_ALLOW_HEADERS: List of non-standard HTTP request headers that the client is allowed to send.
+# # 'authorization' is crucial if you're sending tokens (e.g., Bearer tokens).
+# CORS_ALLOW_HEADERS = [
+#     'accept',
+#     'accept-encoding',
+#     'authorization', # This covers both 'Authorization' and 'authorization'
+#     'content-type',
+#     'dnt',
+#     'origin',
+#     'user-agent',
+#     'x-csrftoken',
+#     'x-requested-with',
+#     # !!! IMPORTANT: The line below was incorrect and has been removed !!!
+#     # 'Access-Control-Allow-Origin: https://defe-2.vercel.app/',
+# ]
 
 # If you're using JWT or other token-based auth, you might also need:
 CORS_ALLOW_CREDENTIALS = True # Allows cookies/authorization headers to be sent cross-origin
