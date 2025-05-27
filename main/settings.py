@@ -224,7 +224,8 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'Access-Control-Allow-Origin',
+    'Access-Control-Allow-Origin: https://defe-2.vercel.app/',
+    
 ]
 
 MAINMEDIA = os.getenv('MAINMEDIA')
