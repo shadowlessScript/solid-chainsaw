@@ -208,7 +208,9 @@ REST_FRAMEWORK = {
 }
 
 X_FRAME_OPTIONS = ['ALLOW-FROM https://127.0.0.1/', 'ALLOW-FROM https://defe-2.vercel.app/']
-
+CORS_ALLOWED_ORIGINS = [
+    'https://defe-2.vercel.app'
+]
 TOKEN_SECRET_CODE = 'county47?Refined'
 TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
 
