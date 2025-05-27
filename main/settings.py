@@ -35,7 +35,7 @@ if os.getenv('SERVER_DEBUG_MODE') == 'True':
 else:
     DEBUG = False
 
-ALLOWED_HOSTS = ['*', ".vercel.app"]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
