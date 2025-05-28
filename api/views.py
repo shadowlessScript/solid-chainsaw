@@ -1419,7 +1419,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 # New fields
                 no_cabinet_memo = payload.get('no_cabinet_memo', False)
                 no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
-                tender_number = payload['tender_number']
+                tender_number = payload.get('tender_number')
                 # project_status = payload.get('project_status')
 
                 print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
