@@ -1261,7 +1261,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 no_cabinet_memo = payload.get('no_cabinet_memo', False)
                 no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
                 tender_number = payload['tender_number']
-                project_status = payload.get('project_status')
 
                 print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
 
@@ -1386,7 +1385,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         "no_cabinet_memo": no_cabinet_memo,  # Add the new field
                         "no_cabinet_memo_reason": no_cabinet_memo_reason,
                         "tender_number": tender_number,
-                        "project_status": project_status,
                     }
                     models.Wave.objects.create(**raw)
 
@@ -1416,13 +1414,13 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 results_leaders = payload['results_leaders']
                 technical_leaders = payload['technical_leaders']
                 strategic_leaders = payload['strategic_leaders']
-                standalone = payload.get('standalone')
+                # standalone = payload.get('standalone')
 
                 # New fields
                 no_cabinet_memo = payload.get('no_cabinet_memo', False)
                 no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
                 tender_number = payload['tender_number']
-                project_status = payload.get('project_status')
+                # project_status = payload.get('project_status')
 
                 print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
                 print(tender_number)
@@ -1535,7 +1533,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         "no_cabinet_memo": no_cabinet_memo,  # Update the new field
                         "no_cabinet_memo_reason": no_cabinet_memo_reason,  # Update the new field
                         "tender_number": tender_number,
-                        "project_status": project_status,
+                        # "project_status": project_status,
                     }
                     models.Wave.objects.filter(Q(id=request_id)).update(**raw)
 
