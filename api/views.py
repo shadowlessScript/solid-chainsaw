@@ -1422,9 +1422,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 tender_number = payload.get('tender_number')
                 # project_status = payload.get('project_status')
 
-                print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
-                print(tender_number)
-
+               
 
                 if not no_cabinet_memo:  # If cabinet memo is required
                   if not cabinet_memo:
@@ -1449,7 +1447,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         ward = serializers.FetchWardSerializer(ward,many=False).data
                         location['ward'] = ward
                     except Exception as e:
-                        print(e)
                         return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
 
@@ -1473,13 +1470,11 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 try:
                     directorate = models.Directorate.objects.get(id=directorate)
                 except Exception as e:
-                    print(e)
                     return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
 
                 try:
                     sub_category = models.ProjectSubCategory.objects.get(id=sub_category)
                 except Exception as e:
-                    print(e)
                     return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
                 
                 # Extract request_id from payload or URL
@@ -1624,10 +1619,10 @@ class FoundationViewSet(viewsets.ModelViewSet):
             sub_county = request.data.get("subCounty")  # Correct way to access POST data
             if sub_county:
                 get_sub_county = models.Wave.objects.filter(location__ward__sub_county__name=sub_county)
-                total_budget = []
+                budget = []
                 for x in get_sub_county:
-                    total_budget.append(x.budget)
-                total_budget = sum(total_budget)
+                    budget.append(x.budget)
+                total_budget = sum(budget)
                 # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
                 return Response({"Number of Projects": len(get_sub_county), "Total budget": total_budget}, status=status.HTTP_200_OK)
             else:
