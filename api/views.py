@@ -1624,7 +1624,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     budget.append(x.budget)
                 total_budget = sum(budget)
                 # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
-                return Response({"Number of Projects": len(get_sub_county), "Total budget": total_budget}, status=status.HTTP_200_OK)
+                return Response({"Number of Projects": len(get_sub_county), "Total budget": '{:,}'.format(total_budget)}, status=status.HTTP_200_OK)
             else:
                 return Response({"details": "Sub county parameter is missing in the request body"}, status=status.HTTP_400_BAD_REQUEST)
         else:
