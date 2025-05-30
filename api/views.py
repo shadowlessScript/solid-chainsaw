@@ -1561,7 +1561,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
+                    # print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif project_type:
                 try:
@@ -1578,8 +1578,8 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
-                    waves = models.Wave.objects.filter(Q(is_deleted=False)).order_by('name')
-                    waves = serializers.FetchWaveSerializer(waves,many=True).data
+                    waves = models.Wave.objects.exclude(is_deleted=True)
+                    waves = serializers.WaveSerializer(waves,many=True).data
                     return Response(waves, status=status.HTTP_200_OK)
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)

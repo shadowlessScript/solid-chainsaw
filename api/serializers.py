@@ -17,7 +17,10 @@ class FetchSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.Sector
         fields = '__all__'
-
+class FetchSector(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.Sector
+        fields = ['name']
 class CreateSubSectorSerializer(serializers.Serializer):
     name = serializers.ListField()
     sector = serializers.CharField(max_length=255)
@@ -32,7 +35,11 @@ class FetchSubSectorSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.SubSector
         fields = '__all__'
-
+class FetchSubSector(serializers.ModelSerializer):
+    sector = FetchSector()
+    class Meta:
+        model = api_models.SubSector
+        fields = ['name', 'sector']
 class CreateDirectorateSerializer(serializers.Serializer):
     name = serializers.ListField()
     sub_sector = serializers.CharField(max_length=255)
@@ -48,7 +55,11 @@ class FetchDirectorateSerializer(serializers.ModelSerializer):
         model = api_models.Directorate
         fields = '__all__'
 
-
+class FetchDirectorate(serializers.ModelSerializer):
+    sub_sector = FetchSubSector()
+    class Meta:
+        model = api_models.Directorate
+        fields = ['name', 'sub_sector']
 class UpdateDepartmentSerializer(serializers.Serializer):
     request_id = serializers.CharField(max_length=255)
     name = serializers.CharField(max_length=255)
@@ -64,7 +75,10 @@ class FetchProjectSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.ProjectSubCategory
         fields = '__all__'
-        
+class FetchProjectSubCategory(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.ProjectSubCategory
+        fields = ['name']
 #    cabinet memo  
 class CreateCabinetMemoSerializer(serializers.Serializer):
     memoNumber = serializers.CharField()
@@ -114,6 +128,10 @@ class FetchCabinetMemoSerializer(serializers.ModelSerializer):
     #     if obj.cabinetMemoFile:
     #         return request.build_absolute_uri(obj.cabinetMemoFile.url)  # Build absolute URL
     #     return None  # Return None if no file is uploaded
+class FetchCabMemoNumber(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.CabinetMemo
+        fields = ('memoNumber')
 
 class UpdateCabinetMemoSerializer(serializers.Serializer):
     request_id = serializers.CharField()
@@ -180,6 +198,11 @@ class FetchFinancialYearBudgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.BudgetFinancialYear
         fields = '__all__'
+
+class FetchFYSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.BudgetFinancialYear
+        fields = ['Year']
 
 class UpdateFinancialYearBudgetSerializer(serializers.Serializer):
     request_id = serializers.CharField()
@@ -287,17 +310,25 @@ class FetchBoroughProjectsSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.Wave
         fields = ("name", "type","budget", "sub_category", "financial_year", "start_date", "end_date","cabinet_memo")
+class WaveSerializer(serializers.ModelSerializer):
+    cabinet_memo = FetchCabMemoNumber()
+    financial_year = FetchFYSerializer()
+    directorate = FetchDirectorate() 
+    sub_category = FetchProjectSubCategory()
+    class Meta:
+        model = api_models.Wave
+        fields = "__all__"
     
 class FetchWaveSerializer(serializers.ModelSerializer):
     # lead_coach = UsersSerializer()
     financial_year = FetchFinancialYearBudgetSerializer()
     directorate = FetchDirectorateSerializer() 
-    cabinet_memo = FetchCabinetMemoSerializer()
+    cabinet_memo = FetchCabMemoNumber()
     memoNumber = serializers.CharField(source='cabinet_memo.memoNumber', read_only=True)
     sub_category = FetchProjectSubCategorySerializer()
     sub_projects = serializers.SerializerMethodField()
     mother_project = serializers.SerializerMethodField()
-    leaders = serializers.SerializerMethodField()
+    # leaders = serializers.SerializerMethodField()
 
     # New fields for fetching
     no_cabinet_memo = serializers.BooleanField(required=False)
