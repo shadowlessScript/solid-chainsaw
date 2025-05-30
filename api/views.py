@@ -1552,7 +1552,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown wave!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif serializer == 'slim':
                 try:
