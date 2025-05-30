@@ -1555,7 +1555,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif serializer == 'slim':
                 try:
-                    waves = models.Wave.objects.filter().order_by('name')
+                    waves = models.Wave.objects.filter().order_by('name')[:50]
                     waves = serializers.SlimFetchWaveSerializer(waves,many=True).data
                     return Response(waves, status=status.HTTP_200_OK)
                 except (ValidationError, ObjectDoesNotExist):
