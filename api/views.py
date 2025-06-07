@@ -69,7 +69,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 # print(data)
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
-            print("Error in progress_by_sector:", e)
             return Response({"error": "Unable to compute sector progress"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
    
     @action(detail=False, methods=["GET"], url_path="project-progress-by-sub-sector")
@@ -105,7 +104,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
             return Response(sub_sector_data, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print("Error in progress_by_sub_sector:", e)
             return Response({"error": "Unable to compute sub-sector progress"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     @action(detail=False, methods=["GET"], url_path="progress-by-sub-sector")
@@ -129,7 +127,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
             # Convert defaultdict to list of sub-sector groups
             data = []
             for sub_sector_name, completions in sub_sector_data.items():
-                print(sub_sector_name, completions)
                 avg_completion = sum(completions)/len(completions) if completions else 0
                 data.append({
                     "sub_sector": sub_sector_name,
@@ -139,7 +136,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
             return Response(data, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print("Error in progress_by_sub_sector:", e)
             return Response({"error": "Unable to compute sub-sector progress"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
    
     @action(methods=["GET"], 
@@ -221,8 +217,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     sectors = models.Sector.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -231,7 +226,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
@@ -314,7 +308,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Sub Sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -324,7 +317,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == "DELETE":
@@ -407,7 +399,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Sub Sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -417,7 +408,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == "DELETE":
@@ -484,7 +474,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown title!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -494,7 +483,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
@@ -561,7 +549,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown objective!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif goal_id:
                 try:
@@ -571,7 +558,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown objective!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -581,7 +567,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
@@ -670,7 +655,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Overseer!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif name:
                 try:
@@ -680,7 +664,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -690,7 +673,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == "DELETE":
@@ -808,8 +790,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             if project_id:
                 try:
                     area = models.ThematicArea.objects.filter(Q(project=project_id))
@@ -818,8 +799,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif overseer_id:
                 try:
                     overseer = models.ThematicArea.objects.filter((Q(results_leader=overseer_id) | Q(team_leader=overseer_id) | Q(team_leader=overseer_id)) & Q(is_deleted=False)).order_by('date_created')
@@ -828,8 +808,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     area = models.ThematicArea.objects.filter(Q(is_deleted=False)).order_by('date_created')
@@ -838,8 +817,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -1003,8 +981,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif thematic_area:
                 try:
                     area = models.RRIGoals.objects.filter(Q(thematic_area=thematic_area)).order_by('date_created')
@@ -1013,8 +990,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif serializer == 'slim':
                 try:
                     area = models.RRIGoals.objects.filter(Q(is_deleted=False)).order_by('goal')
@@ -1023,8 +999,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif selector:
                 selector_value = request.query_params.get('selector_value')
                 location_value = request.query_params.get('location_value')
@@ -1056,8 +1031,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     if 'EVALUATOR' in roles and page == 'evaluation':
@@ -1073,8 +1047,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -1134,8 +1107,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif thematic_area:
                 try:
                     members = models.TeamMembers.objects.filter(Q(thematic_area=thematic_area) & Q(is_deleted=False)).order_by('name')
@@ -1144,8 +1116,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     members = models.TeamMembers.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -1154,8 +1125,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -1211,8 +1181,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
 
                         except Exception as e:
                             # logger.error(e)
-                            print(e)
-                            return Response({"details": "Invalid File(s)"}, status=status.HTTP_400_BAD_REQUEST)  
+                                            return Response({"details": "Invalid File(s)"}, status=status.HTTP_400_BAD_REQUEST)  
                                             
 
             user_util.log_account_activity(
@@ -1232,7 +1201,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
         if request.method == "POST":
             payload = request.data
 
-            print("Payload:", payload) 
             
             serializer = serializers.CreateWaveSerializer(
                 data=payload, many=False)
@@ -1244,7 +1212,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 financial_year= payload['financial_year']
                 # cabinet_memo = payload['cabinet_memo']
                 cabinet_memo = payload.get('cabinet_memo')  # Change this line
-                print("Cabinet Memo ID:", cabinet_memo)  # Log the ID
                 budget = payload['budget']
                 directorate = payload['directorate']
                 location = payload['location']
@@ -1261,20 +1228,18 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 no_cabinet_memo = payload.get('no_cabinet_memo', False)
                 no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
                 tender_number = payload['tender_number']
+                # project_status = payload.get('project_status')
 
-                print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
 
 
-                if not no_cabinet_memo:  # This means cabinet memo is required
-                   print("Cabinet memo is required. Cabinet Memo:", cabinet_memo)
-                   if not cabinet_memo:
-                       return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
-                   try:
-                       cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
-                   except models.CabinetMemo.DoesNotExist:
-                        return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    print("No cabinet memo is required.")
+                
+                if not cabinet_memo:
+                    return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
+                try:
+                    cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
+                except models.CabinetMemo.DoesNotExist:
+                    return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
+               
 
  
                 
@@ -1290,8 +1255,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         ward = serializers.FetchWardSerializer(ward,many=False).data
                         location['ward'] = ward
                     except Exception as e:
-                        print(e)
-                        return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+                                    return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
                 if ward == "SUB":
 
@@ -1313,8 +1277,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 try:
                     financial_year= models.BudgetFinancialYear.objects.get(Q(id=financial_year))
                 except Exception as e:
-                    print(e)
-                    return Response({"details": f"Unknown financial year !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Unknown financial year !"}, status=status.HTTP_400_BAD_REQUEST) 
                 
                 # try:
                 #     cabinet_memo= models.CabinetMemo.objects.get(Q(id=cabinet_memo))
@@ -1331,14 +1294,12 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 try:
                     directorate = models.Directorate.objects.get(id=directorate)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
                 
                 try:
                     sub_category = models.ProjectSubCategory.objects.get(id=sub_category)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
 
                 # check existence of same wave name
                 if models.Wave.objects.filter(name__icontains=name).exists():
@@ -1385,6 +1346,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         "no_cabinet_memo": no_cabinet_memo,  # Add the new field
                         "no_cabinet_memo_reason": no_cabinet_memo_reason,
                         "tender_number": tender_number,
+                        # "project_status": project_status,
                     }
                     models.Wave.objects.create(**raw)
 
@@ -1403,7 +1365,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 financial_year= payload['financial_year']
                 # cabinet_memo = payload['cabinet_memo']
                 cabinet_memo = payload.get('cabinet_memo',None )  # Change this line
-                print("Cabinet Memo ID:", cabinet_memo)  # Log the ID
                 budget = payload['budget']
                 directorate = payload['directorate']
                 location = payload['location']
@@ -1414,15 +1375,16 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 results_leaders = payload['results_leaders']
                 technical_leaders = payload['technical_leaders']
                 strategic_leaders = payload['strategic_leaders']
-                # standalone = payload.get('standalone')
+                standalone = payload.get('standalone')
 
                 # New fields
                 no_cabinet_memo = payload.get('no_cabinet_memo', False)
                 no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
-                tender_number = payload.get('tender_number')
+                tender_number = payload['tender_number']
                 # project_status = payload.get('project_status')
 
-               
+              
+
 
                 if not no_cabinet_memo:  # If cabinet memo is required
                   if not cabinet_memo:
@@ -1447,7 +1409,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         ward = serializers.FetchWardSerializer(ward,many=False).data
                         location['ward'] = ward
                     except Exception as e:
-                        return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+                                    return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
 
                 if type == "SUB":
@@ -1470,12 +1432,12 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 try:
                     directorate = models.Directorate.objects.get(id=directorate)
                 except Exception as e:
-                    return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
 
                 try:
                     sub_category = models.ProjectSubCategory.objects.get(id=sub_category)
                 except Exception as e:
-                    return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
                 
                 # Extract request_id from payload or URL
                 request_id = payload.get('request_id')  # Or kwargs.get('request_id') if coming from URL
@@ -1555,13 +1517,12 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif serializer == 'slim':
                 try:
-                    waves = models.Wave.objects.filter().order_by('name')[:50]
+                    waves = models.Wave.objects.filter().order_by('name')
                     waves = serializers.SlimFetchWaveSerializer(waves,many=True).data
                     return Response(waves, status=status.HTTP_200_OK)
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    # print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif project_type:
                 try:
@@ -1574,17 +1535,15 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
-                    waves = models.Wave.objects.exclude(is_deleted=True)
-                    waves = serializers.WaveSerializer(waves,many=True).data
+                    waves = models.Wave.objects.filter(Q(is_deleted=False)).order_by('name')
+                    waves = serializers.FetchWaveSerializer(waves,many=True).data
                     return Response(waves, status=status.HTTP_200_OK)
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
@@ -1599,7 +1558,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except Exception as e:
                     return Response({"details": "Unknown Id"}, status=status.HTTP_400_BAD_REQUEST)
     
-    @action(methods=["POST"],detail=False, url_path="update-project-status", url_name="update-project.status")
+    @action(methods=["POST"],detail=False, url_path="update-project-status", url_name="update-project-status")
     def update_project_status(self, request):
         if request.method == "POST":
             request_id = request.data["id"]
@@ -1619,34 +1578,79 @@ class FoundationViewSet(viewsets.ModelViewSet):
             if sub_county:
                 get_sub_county = models.Wave.objects.filter(location__ward__sub_county__name=sub_county)
                 budget = []
+                categories = {}
                 for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in categories:
+                            categories[x.sub_category.name] += 1
+                        else:
+                            categories[x.sub_category.name] = 1
                     budget.append(x.budget)
                 total_budget = sum(budget)
+                output = {
+                    "Number of Projects": len(get_sub_county), 
+                    "Total budget": '{:,}'.format(total_budget)
+                    }
+                for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in output:
+                            output[x.sub_category.name] += 1
+                        else:
+                            output[x.sub_category.name] = 1
+                
                 # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
-                return Response({"Number of Projects": len(get_sub_county), "Total budget": '{:,}'.format(total_budget)}, status=status.HTTP_200_OK)
+                return Response(output, status=status.HTTP_200_OK)
             else:
                 return Response({"details": "Sub county parameter is missing in the request body"}, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response({"details": "Only POST requests are allowed for this endpoint"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
     
+    @action(methods=["GET"], detail=False, url_path="get-project-status", url_name="get-project-status")
+    def get_projects_status(self,request):
+        requested_status = request.query_params.get("status")
+        try:
+            result = ""
+            if requested_status == "Stalled":
+                stalled_projects = models.Wave.objects.filter(project_status = requested_status)
+                result = serializers.ProjectStatusFetchWaveSerializer(stalled_projects, many=True).data
+            elif requested_status == "Not Started":
+                projects_not_started = models.Wave.objects.filter(project_status = requested_status)
+                result = serializers.ProjectStatusFetchWaveSerializer(projects_not_started, many=True).data
+            return Response(result, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"details": e}, status=status.HTTP_400_BAD_REQUEST)
+
+
     @action(methods=["GET"], detail=False, url_path="borough-info", url_name="borough-info")
     def get_borough_info(self, request):
        
-        borough = request.query_params.get("borough")  # Correct way to access POST data
-        if borough:
+        borough = request.query_params.get("borough")  
+        completion = request.query_params.get("completion")
+
+        if borough and not completion:
             get_borough_projects = models.Wave.objects.filter(location__ward__sub_county__borough__name=borough)            
             info = serializers.FetchBoroughProjectsSerializer(get_borough_projects, many=True).data
             return Response(info, status=status.HTTP_200_OK)
+        elif borough and completion:
+            temp = models.RRIGoals.objects.filter(is_deleted=False, wave__location__ward__sub_county__borough__name=borough)          
+            get_completion = serializers.ProjectCompletionAnalyticsSerializer(temp, many=True).data
+            return Response(get_completion, status=status.HTTP_200_OK)
         else:
             return Response({"details": "Borough parameter is missing in the request body"}, status=status.HTTP_400_BAD_REQUEST)  
     
     @action(methods=["GET"], detail=False, url_path="sector-info", url_name="sector-info")
     def get_sector_info(self, request):       
-        sector = request.query_params.get("sector")  # Correct way to access POST data
-        if sector:
+        sector = request.query_params.get("sector")  
+        need_completion = request.query_params.get("completion")
+        if sector and not need_completion:
             get_sector_projects = models.Wave.objects.filter(directorate__sub_sector__sector__name=sector)            
             info = serializers.FetchBoroughProjectsSerializer(get_sector_projects, many=True).data
             return Response(info, status=status.HTTP_200_OK)
+        elif need_completion and sector:
+            # get_sector_projects = models.Wave.objects.filter(directorate__sub_sector__sector__name=sector)  
+            temp = models.RRIGoals.objects.filter(is_deleted=False, wave__directorate__sub_sector__sector__name=sector)          
+            get_completion = serializers.ProjectCompletionAnalyticsSerializer(temp, many=True).data
+            return Response(get_completion, status=status.HTTP_200_OK)
         else:
             return Response({"details": f"No info about {sector}"}, status=status.HTTP_400_BAD_REQUEST)  
 
@@ -1687,7 +1691,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     report['workplan'] = workplan
                     
                 except Exception as e:
-                    print(e)
                     return Response({"details": f"All fields required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
             
@@ -1780,7 +1783,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif rri_goal:
                 try:
@@ -1790,7 +1792,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -1800,7 +1801,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 
         elif request.method == "DELETE":
@@ -1825,7 +1825,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
 
                     return Response('200', status=status.HTTP_200_OK)     
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Unknown Id"}, status=status.HTTP_400_BAD_REQUEST)
                 
 
@@ -1857,8 +1856,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     ward = serializers.FetchWardSerializer(ward,many=False).data
                     location['ward'] = ward
                 except Exception as e:
-                    print(e)
-                    return Response({"details": f"Ward required!"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": f"Ward required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
 
                 if not steps:
@@ -1937,7 +1935,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     ward = serializers.FetchWardSerializer(ward,many=False).data
                     location['ward'] = ward
                 except Exception as e:
-                    print(e)
                     return Response({"details": f"Ward required!"}, status=status.HTTP_400_BAD_REQUEST) 
 
 
@@ -2028,7 +2025,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif rri_goal:
                 try:
@@ -2038,7 +2034,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -2048,7 +2043,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
@@ -2173,7 +2167,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif workplan:
                 try:
@@ -2183,7 +2176,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -2193,8 +2185,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
 
     @action(methods=["GET","POST", "PUT"], detail=False, url_path="evaluation",url_name="evaluation")
@@ -2237,8 +2228,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 try:
                     assigned = models.AssignedEvaluations.objects.get(Q(rri_goal=rri_goal) & Q(evaluator=request.user))
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Evaluation not assigned !"}, status=status.HTTP_400_BAD_REQUEST) 
+                            return Response({"details": "Evaluation not assigned !"}, status=status.HTTP_400_BAD_REQUEST) 
                 
                 
                 with transaction.atomic():
@@ -2326,8 +2316,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif rri_goal:
                 try:
                     evaluations = models.Evaluation.objects.filter(Q(rri_goal=rri_goal)).order_by('-date_created')
@@ -2336,8 +2325,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     evaluations = models.Evaluation.objects.all().order_by('-date_created')
@@ -2347,8 +2335,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
     @action(methods=["GET","POST"], detail=False, url_path="assign-evaluation",url_name="assign-evaluation")
     def assign_evaluation(self, request):
@@ -2407,7 +2394,6 @@ class FoundationViewSet(viewsets.ModelViewSet):
                                 # If it doesn't exist, add it to the list of instances to be saved
                                 raw_instances.append({'rri_goal': goal, 'evaluator': evaluator})
 
-                    print(raw_instances)
                     models.AssignedEvaluations.objects.bulk_create(
                         models.AssignedEvaluations(**data) for data in raw_instances
                     )
@@ -2432,8 +2418,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             elif rri_goal:
                 try:
                     evaluations = models.AssignedEvaluations.objects.filter(Q(rri_goal=rri_goal)).order_by('-date_created')
@@ -2442,8 +2427,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     evaluations = models.AssignedEvaluations.objects.all().order_by('-date_created')
@@ -2452,8 +2436,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
 
     @action(methods=["POST", "GET", "PUT", "DELETE"],
@@ -2508,8 +2491,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     sub_counties = models.Borough.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -2518,8 +2500,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
          
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -2603,8 +2584,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     sub_counties = models.SubCounty.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -2613,8 +2593,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -2697,8 +2676,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Ward!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     wards = models.Ward.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -2707,8 +2685,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -2791,8 +2768,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Estate!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     estates = models.Estate.objects.all().order_by('name')
@@ -2801,8 +2777,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 
                 
     @action(methods=["POST", "GET", "PUT", "DELETE"],
@@ -2857,8 +2832,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Project Sub Categories!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     sectors = models.ProjectSubCategory.objects.filter(Q(is_deleted=False)).order_by('name')
@@ -2867,8 +2841,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
         elif request.method == "DELETE":
             request_id = request.query_params.get('request_id')
@@ -2926,8 +2899,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Financial Year Budget..!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:                    
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     budgets = models.BudgetFinancialYear.objects.filter(Q(is_deleted=False)).order_by('Year')
@@ -2936,8 +2908,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
         elif request.method == "PUT":
             payload = request.data
@@ -3058,8 +3029,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown Cabinet Memo!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:                    
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
                     cabinet_memos = models.CabinetMemo.objects.filter(Q(is_deleted=False)).order_by('memoNumber')
@@ -3068,8 +3038,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
-                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         
 
         
@@ -3190,8 +3159,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 serializer = serializers.FetchCabinetMemoApprovalStatusSerializer(approval_statuses, many=True)
                 return Response(serializer.data, status=status.HTTP_200_OK)
             except Exception as e:
-                print(e)
-                return Response({"details": "Cannot fetch approval statuses at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                    return Response({"details": "Cannot fetch approval statuses at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                             
                         
                 
@@ -3223,7 +3191,6 @@ class ReportsViewSet(viewsets.ViewSet):
         except (ValidationError, ObjectDoesNotExist):
             return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print(e)
             return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
 
 class AnalyticsViewSet(viewsets.ViewSet):
@@ -3302,7 +3269,6 @@ class AnalyticsViewSet(viewsets.ViewSet):
        
         
             financial_years = models.Wave.objects.filter(is_deleted=False, sub_category=category).values('financial_year').annotate(yearly_budget=Sum('budget'))
-            print(financial_years)
         financial_years_budgets = {}
         if financial_years:
             for fy in financial_years:
@@ -3394,7 +3360,6 @@ class DepartmentViewSet(viewsets.ViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown department!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
             else:
                 try:
@@ -3404,5 +3369,4 @@ class DepartmentViewSet(viewsets.ViewSet):
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
-                    print(e)
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
