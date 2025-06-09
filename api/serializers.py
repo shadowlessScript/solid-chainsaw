@@ -454,7 +454,7 @@ class UpdateThematicAreaSerializer(serializers.Serializer):
 
 
 class FetchThematicAreaSerializer(serializers.ModelSerializer):
-    # sector = FetchSectorSerializer()
+    sector = FetchSectorSerializer()
     # directorate = FetchDirectorateSerializer()
     # department = FetchDepartmentSerializer()
 
@@ -477,6 +477,7 @@ class UpdateRRIGoalsSerializer(serializers.Serializer):
 
 
 class SlimFetchRRIGoalsSerializer(serializers.ModelSerializer):
+    wave = FetchWaveSerializer()
     class Meta:
         model = api_models.RRIGoals
         fields = '__all__'
