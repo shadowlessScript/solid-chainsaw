@@ -759,10 +759,10 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 # except (ValidationError, ObjectDoesNotExist):
                 #     return Response({"details": "Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                try:
-                    sector = models.Sector.objects.get(Q(id=sector))
-                except (ValidationError, ObjectDoesNotExist):
-                    return Response({"details": "Unknown sector!"}, status=status.HTTP_400_BAD_REQUEST)
+                # try:
+                #     sector = models.Sector.objects.get(Q(id=sector))
+                # except (ValidationError, ObjectDoesNotExist):
+                #     return Response({"details": "Unknown sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 
                 
                 with transaction.atomic():
