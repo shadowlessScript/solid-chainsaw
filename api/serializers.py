@@ -446,8 +446,8 @@ class CreateThematicAreaSerializer(serializers.Serializer):
 
 class UpdateThematicAreaSerializer(serializers.Serializer):
     request_id = serializers.CharField(max_length=255)
-    department = serializers.CharField(max_length=255)
-    sector = serializers.CharField(max_length=255)
+    # department = serializers.CharField(max_length=255)
+    # sector = serializers.CharField(max_length=255)
     area = serializers.CharField(max_length=5000)
     project = serializers.CharField(max_length=500)
     
