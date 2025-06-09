@@ -843,18 +843,18 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 wave = payload['wave']
                 goal = payload['goal']
                 thematic_area = payload['thematic_area']
-                results_leaders = payload['results_leaders']
-                technical_leaders = payload['technical_leaders']
-                strategic_leaders = payload['strategic_leaders']
+                # results_leaders = payload['results_leaders']
+                # technical_leaders = payload['technical_leaders']
+                # strategic_leaders = payload['strategic_leaders']
 
-                if not results_leaders:
-                    return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not results_leaders:
+                #     return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                if not technical_leaders:
-                    return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not technical_leaders:
+                #     return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                if not strategic_leaders:
-                    return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not strategic_leaders:
+                #     return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
 
                 try:
                     thematic_area = models.ThematicArea.objects.get(Q(id=thematic_area))
@@ -871,9 +871,9 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     raw = {
                         "wave": wave,
                         "goal": goal,
-                        "results_leaders": results_leaders,
-                        "technical_leaders": technical_leaders,
-                        "strategic_leaders": strategic_leaders,
+                        # "results_leaders": results_leaders,
+                        # "technical_leaders": technical_leaders,
+                        # "strategic_leaders": strategic_leaders,
                         "thematic_area": thematic_area,
                         "creator": request.user,
                     }
@@ -903,18 +903,18 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 goal = payload['goal']
                 thematic_area = payload['thematic_area']
                 request_id = payload['request_id']
-                results_leaders = payload['results_leaders']
-                technical_leaders = payload['technical_leaders']
-                strategic_leaders = payload['strategic_leaders']
+                # results_leaders = payload['results_leaders']
+                # technical_leaders = payload['technical_leaders']
+                # strategic_leaders = payload['strategic_leaders']
 
-                if not results_leaders:
-                    return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not results_leaders:
+                #     return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                if not technical_leaders:
-                    return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not technical_leaders:
+                #     return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                if not strategic_leaders:
-                    return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not strategic_leaders:
+                #     return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
 
                 try:
                     rri = models.RRIGoals.objects.get(Q(id=request_id))
@@ -937,9 +937,9 @@ class FoundationViewSet(viewsets.ModelViewSet):
                     raw = {
                         "wave": wave,
                         "goal": goal,
-                        "results_leaders": results_leaders,
-                        "technical_leaders": technical_leaders,
-                        "strategic_leaders": strategic_leaders,
+                        # "results_leaders": results_leaders,
+                        # "technical_leaders": technical_leaders,
+                        # "strategic_leaders": strategic_leaders,
                         "thematic_area": thematic_area,
                         "creator": request.user,
                     }
@@ -3164,7 +3164,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False, url_name="tiny-waves", url_path="tiny-waves")
     def get_projects(self, request):
         try:
-            projects = models.Wave.objects.filter(is_delete=False)
+            projects = models.Wave.objects.filter(Q(is_delete=False))
             projects_serialized = serializers.TinyFetchWaveSerializer(projects, many=True).data
             return Response(projects_serialized, status=status.HTTP_200_OK)
         except Exception as e:

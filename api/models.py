@@ -296,18 +296,18 @@ def update_budget_financial_year(sender, instance, **kwargs):
     if instance.financial_year:
         instance.financial_year.update_financials()
 
-class ThematicArea(models.Model):
+class ThematicArea(models.Model): # project goal
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     area = models.TextField()
-    sector = models.ForeignKey(
-        Sector, related_name="thematic_area_sector", on_delete=models.DO_NOTHING
-    )
+    # sector = models.ForeignKey(
+    #     Sector, related_name="thematic_area_sector", on_delete=models.DO_NOTHING
+    # )
     project = models.ForeignKey(
         Wave, related_name="goal_project", on_delete=models.DO_NOTHING, null=True, blank=True
     )
-    directorate = models.ForeignKey(
-        Directorate, related_name="thematic_area_directorate", on_delete=models.DO_NOTHING, null=True, blank=True
-    )
+    # directorate = models.ForeignKey(
+    #     Directorate, related_name="thematic_area_directorate", on_delete=models.DO_NOTHING, null=True, blank=True
+    # )
     is_deleted = models.BooleanField(default=False)
 
     date_created = models.DateTimeField(auto_now_add=True)
@@ -319,7 +319,7 @@ class ThematicArea(models.Model):
         db_table = "thematic_areas"
 
 
-class RRIGoals(models.Model):
+class RRIGoals(models.Model): # project objective
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     goal = models.TextField()
     thematic_area = models.ForeignKey(
@@ -337,9 +337,9 @@ class RRIGoals(models.Model):
        User, on_delete=models.DO_NOTHING, related_name="goal_creator",
        null=True, blank=True
     )
-    results_leaders = models.JSONField(null=True, blank=True)
-    technical_leaders = models.JSONField(null=True, blank=True)
-    strategic_leaders = models.JSONField(null=True, blank=True)
+    # results_leaders = models.JSONField(null=True, blank=True)
+    # technical_leaders = models.JSONField(null=True, blank=True)
+    # strategic_leaders = models.JSONField(null=True, blank=True)
     # results_leader = models.ForeignKey(
     #     Overseer, related_name="results_leader", on_delete=models.DO_NOTHING,
     #     null=True, blank=True
