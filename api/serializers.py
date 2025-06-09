@@ -454,8 +454,8 @@ class UpdateThematicAreaSerializer(serializers.Serializer):
 
 
 class FetchThematicAreaSerializer(serializers.ModelSerializer):
-    sector = FetchSectorSerializer()
-    directorate = FetchDirectorateSerializer()
+    # sector = FetchSectorSerializer()
+    # directorate = FetchDirectorateSerializer()
     # department = FetchDepartmentSerializer()
 
     class Meta:

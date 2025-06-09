@@ -1041,7 +1041,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                         area = serializers.FetchRRIGoalsSerializer(area, many=True, context={"user_id":request.user.id}).data
                     else:
                         area = models.RRIGoals.objects.filter(Q(is_deleted=False)).order_by('date_created')
-                        area = serializers.FetchRRIGoalsSerializer(area, many=True).data
+                        area = serializers.SlimFetchRRIGoalsSerializer(area, many=True).data
 
                     return Response(area, status=status.HTTP_200_OK)
                 except (ValidationError, ObjectDoesNotExist):
