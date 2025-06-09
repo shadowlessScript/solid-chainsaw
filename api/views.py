@@ -3164,7 +3164,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False, url_name="tiny-waves", url_path="tiny-waves")
     def get_projects(self, request):
         try:
-            projects = models.Wave.objects.all()
+            projects = models.Wave.objects.filter(is_delete=False)
             projects_serialized = serializers.TinyFetchWaveSerializer(projects, many=True).data
             return Response(projects_serialized, status=status.HTTP_200_OK)
         except Exception as e:
