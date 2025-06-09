@@ -478,6 +478,7 @@ class UpdateRRIGoalsSerializer(serializers.Serializer):
 
 class SlimFetchRRIGoalsSerializer(serializers.ModelSerializer):
     wave = FetchWaveSerializer()
+    thematic_area = FetchThematicAreaSerializer()
     class Meta:
         model = api_models.RRIGoals
         fields = '__all__'
