@@ -698,32 +698,32 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 data=payload, many=False)
             if serializer.is_valid():
                 area = payload['area']
-                sector = payload['sector']
+                # sector = payload['sector']
                 project = payload['project']
-                department = payload['department']       
+                # department = payload['department']       
 
 
-                try:
-                    department = models.Directorate.objects.get(Q(id=department))
-                except (ValidationError, ObjectDoesNotExist):
-                    return Response({"details": "Unknown directorate!"}, status=status.HTTP_400_BAD_REQUEST)
+                # try:
+                #     department = models.Directorate.objects.get(Q(id=department))
+                # except (ValidationError, ObjectDoesNotExist):
+                #     return Response({"details": "Unknown directorate!"}, status=status.HTTP_400_BAD_REQUEST)
                 
                 try:
                     project = models.Wave.objects.get(Q(id=project))
                 except (ValidationError, ObjectDoesNotExist):
                     return Response({"details": "Unknown project!"}, status=status.HTTP_400_BAD_REQUEST)
                 
-                try:
-                    sector = models.Sector.objects.get(Q(id=sector))
-                except (ValidationError, ObjectDoesNotExist):
-                    return Response({"details": "Unknown sector!"}, status=status.HTTP_400_BAD_REQUEST)
+                # try:
+                #     sector = models.Sector.objects.get(Q(id=sector))
+                # except (ValidationError, ObjectDoesNotExist):
+                #     return Response({"details": "Unknown sector!"}, status=status.HTTP_400_BAD_REQUEST)
                 
                 
                 with transaction.atomic():
                     raw = {
                         "area": area,
-                        "directorate": department,
-                        "sector": sector,
+                        # "directorate": department,
+                        # "sector": sector,
                         "project": project,
                     }
                     models.ThematicArea.objects.create(**raw)
@@ -739,9 +739,9 @@ class FoundationViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 request_id = payload['request_id']
                 area = payload['area']
-                sector = payload['sector']
+                # sector = payload['sector']
                 project = payload['project']
-                department = payload['department']
+                # department = payload['department']
                 
 
                 try:
@@ -768,8 +768,8 @@ class FoundationViewSet(viewsets.ModelViewSet):
                 with transaction.atomic():
                     raw = {
                         "area": area,
-                        "directorate": department,
-                        "sector": sector,
+                        # "directorate": department,
+                        # "sector": sector,
                         "project": project,
                     }
                     models.ThematicArea.objects.filter(Q(id=request_id)).update(**raw)
@@ -3164,7 +3164,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False, url_name="tiny-waves", url_path="tiny-waves")
     def get_projects(self, request):
         try:
-            projects = models.Wave.objects.filter(Q(is_delete=False))
+            projects = models.Wave.objects.filter(Q(is_deleted=False))
             projects_serialized = serializers.TinyFetchWaveSerializer(projects, many=True).data
             return Response(projects_serialized, status=status.HTTP_200_OK)
         except Exception as e:
