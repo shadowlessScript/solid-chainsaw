@@ -1233,12 +1233,12 @@ class FoundationViewSet(viewsets.ModelViewSet):
 
 
                 
-                if not cabinet_memo:
-                    return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
-                try:
-                    cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
-                except models.CabinetMemo.DoesNotExist:
-                    return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
+                # if not cabinet_memo:
+                #     return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
+                # try:
+                #     cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
+                # except models.CabinetMemo.DoesNotExist:
+                #     return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
                
 
  
