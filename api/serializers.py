@@ -457,7 +457,7 @@ class FetchThematicAreaSerializer(serializers.ModelSerializer):
     # sector = FetchSectorSerializer()
     # directorate = FetchDirectorateSerializer()
     # department = FetchDepartmentSerializer()
-
+    project = FetchWaveSerializer()
     class Meta:
         model = api_models.ThematicArea
         fields = '__all__'
