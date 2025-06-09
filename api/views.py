@@ -3161,7 +3161,15 @@ class FoundationViewSet(viewsets.ModelViewSet):
             except Exception as e:
                     return Response({"details": "Cannot fetch approval statuses at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                             
-                        
+    @action(methods=["GET"], detail=False, url_name="tiny-waves", url_path="tiny-waves")
+    def get_projects(self, request):
+        try:
+            projects = models.Wave.objects.all()
+            projects_serialized = serializers.TinyFetchWaveSerializer(projects, many=True).data
+            return Response(projects_serialized, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"details": f"An error has occurred {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
                 
                     
         
