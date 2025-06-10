@@ -3170,7 +3170,14 @@ class FoundationViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"details": f"An error has occurred {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
-                
+    @action(methods=["GET"], detail=False, url_name="get-project-goal", url_path="get-project-goal")
+    def get_project_goal(self, request):
+        project = request.query_params.get("project")
+        try:
+            goal = models.ThematicArea.objects.filter(Q(project=project))
+            return Response(goal.id, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"detail": "Project goal not found"}, status=status.HTTP_400_BAD_REQUEST)
                     
         
 class ReportsViewSet(viewsets.ViewSet):

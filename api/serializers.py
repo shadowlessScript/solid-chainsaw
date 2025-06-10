@@ -477,7 +477,7 @@ class UpdateRRIGoalsSerializer(serializers.Serializer):
 
 
 class SlimFetchRRIGoalsSerializer(serializers.ModelSerializer):
-    wave = FetchWaveSerializer()
+    wave = WaveSerializer()
     thematic_area = FetchThematicAreaSerializer()
     class Meta:
         model = api_models.RRIGoals
