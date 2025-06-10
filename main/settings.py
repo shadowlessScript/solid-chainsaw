@@ -276,3 +276,8 @@ CORS_ALLOW_HEADERS = [
 # If you're using JWT or other token-based auth, you might also need:
 CORS_ALLOW_CREDENTIALS = True # Allows cookies/authorization headers to be sent cross-origin
 MAINMEDIA = os.getenv('MAINMEDIA')
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
+}
