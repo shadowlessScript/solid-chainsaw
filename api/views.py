@@ -24,6 +24,396 @@ from django.db.models import Sum
 import math
 from collections import defaultdict
 
+class ProjectsViewSet(viewsets.ModelViewSet):
+    queryset = models.Wave.objects.filter(is_deleted=False)
+    serializer_class = serializers.FetchWaveSerializer
+   
+
+    @action(methods=["POST", "GET",  "PUT", "DELETE"],
+            detail=False,
+            url_path="projects",
+            url_name="projects", )
+    def projects(self, request):
+        if request.method == "POST":
+            payload = request.data
+
+            print("Payload:", payload) 
+            
+            serializer = serializers.CreateWaveSerializer(
+                data=payload, many=False)
+            
+            if serializer.is_valid():
+                name = payload['name']
+                start_date = payload['start_date']
+                end_date = payload['end_date']
+                financial_year= payload['financial_year']
+                # cabinet_memo = payload['cabinet_memo']
+                cabinet_memo = payload.get('cabinet_memo')  # Change this line
+                print("Cabinet Memo ID:", cabinet_memo)  # Log the ID
+                budget = payload['budget']
+                directorate = payload['directorate']
+                location = payload['location']
+                sub_category = payload['sub_category']
+                type = payload['type']
+                main_project = payload['main_project']
+                risks = payload['risks']
+                results_leaders = payload['results_leaders']
+                technical_leaders = payload['technical_leaders']
+                strategic_leaders = payload['strategic_leaders']
+                standalone = payload.get('standalone')
+
+                # New fields
+                no_cabinet_memo = payload.get('no_cabinet_memo', False)
+                no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
+                tender_number = payload['tender_number']
+                # project_status = payload.get('project_status')
+
+                print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
+
+
+                if not no_cabinet_memo:  # This means cabinet memo is required
+                   print("Cabinet memo is required. Cabinet Memo:", cabinet_memo)
+                   if not cabinet_memo:
+                       return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
+                   try:
+                       cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
+                   except models.CabinetMemo.DoesNotExist:
+                        return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    print("No cabinet memo is required.")
+
+ 
+                
+                mother_id = None
+                
+                ward = location.get('ward')
+                
+                if ward and ward != "N/A":
+                    
+                    try:
+                        ward = location['ward']
+                        ward = models.Ward.objects.get(id=ward)
+                        ward = serializers.FetchWardSerializer(ward,many=False).data
+                        location['ward'] = ward
+                    except Exception as e:
+                        print(e)
+                        return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+                if ward == "SUB":
+
+                    if not main_project:
+                        return Response({"details": f"Main Project is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+                    
+                    try:
+                        wave = models.Wave.objects.get(Q(id=main_project))
+                    except (ValidationError, ObjectDoesNotExist):
+                        return Response({"details": "Unknown main project!"}, status=status.HTTP_400_BAD_REQUEST)
+                    
+                    mother_id = main_project
+                
+                if type == "MAIN":
+                    if not standalone:
+                        return Response({"details": "Standalone status is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+                # added
+                try:
+                    financial_year= models.BudgetFinancialYear.objects.get(Q(id=financial_year))
+                except Exception as e:
+                    print(e)
+                    return Response({"details": f"Unknown financial year !"}, status=status.HTTP_400_BAD_REQUEST) 
+                
+                # try:
+                #     cabinet_memo= models.CabinetMemo.objects.get(Q(id=cabinet_memo))
+                # except Exception as e:
+                #     print(e)
+                #     return Response({"details": f"Unknown cabinet memo !"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                 # Only validate cabinet memo if no_cabinet_memo is False
+               
+                
+                
+                # end
+                
+                try:
+                    directorate = models.Directorate.objects.get(id=directorate)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
+                
+                try:
+                    sub_category = models.ProjectSubCategory.objects.get(id=sub_category)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
+
+                # check existence of same wave name
+                if models.Wave.objects.filter(name__icontains=name).exists():
+                    return Response({"details": f"{name} already exists!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+                # validate lead coach
+                # try:
+                #     lead_coach = get_user_model().objects.get(Q(id=lead_coach))
+                # except Exception as e:
+                #     print(e)
+                #     return Response({"details": "Unknown Lead Coach"}, status=status.HTTP_400_BAD_REQUEST) 
+                    
+
+                # find difference in dates / validate dates
+                days = shared_fxns.find_date_difference(start_date,end_date,'days')
+                            
+                try:
+                    days = int(days)
+                except Exception as e:
+                    return Response({"details": f"Invalid dates!"}, status=status.HTTP_400_BAD_REQUEST) 
+                
+                # if days < 100 or days < 0:
+                #     return Response({"details": f"Period is less than 100 days!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+                with transaction.atomic():
+                    raw = {
+                        "name": name,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "financial_year": financial_year,
+                        # "cabinet_memo": cabinet_memo,
+                        "cabinet_memo": cabinet_memo if not no_cabinet_memo else None,  # Assign None if no_cabinet_memo is True
+                        "budget": budget,
+                        "directorate": directorate,
+                        "sub_category": sub_category,
+                        "location": location,
+                        "type": type,
+                        "mother_id": mother_id,
+                        "risks": risks,
+                        "results_leaders": results_leaders,
+                        "technical_leaders": technical_leaders,
+                        "strategic_leaders": strategic_leaders,
+                        "standalone": standalone,
+                        "no_cabinet_memo": no_cabinet_memo,  # Add the new field
+                        "no_cabinet_memo_reason": no_cabinet_memo_reason,
+                        "tender_number": tender_number,
+                        # "project_status": project_status,
+                    }
+                    models.Wave.objects.create(**raw)
+
+                    return Response("Success", status=status.HTTP_200_OK)
+            else:
+                return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+        elif request.method == "PUT":
+            payload = request.data
+            serializer = serializers.UpdateWaveSerializer(data=payload, many=False)
+            
+            if serializer.is_valid():
+                name = payload['name']
+                start_date = payload['start_date']
+                end_date = payload['end_date']
+                financial_year= payload['financial_year']
+                # cabinet_memo = payload['cabinet_memo']
+                cabinet_memo = payload.get('cabinet_memo',None )  # Change this line
+                print("Cabinet Memo ID:", cabinet_memo)  # Log the ID
+                budget = payload['budget']
+                directorate = payload['directorate']
+                location = payload['location']
+                sub_category = payload['sub_category']
+                type = payload['type']
+                main_project = payload['main_project']
+                risks = payload['risks']
+                results_leaders = payload['results_leaders']
+                technical_leaders = payload['technical_leaders']
+                strategic_leaders = payload['strategic_leaders']
+                standalone = payload.get('standalone')
+
+                # New fields
+                no_cabinet_memo = payload.get('no_cabinet_memo', False)
+                no_cabinet_memo_reason = payload.get('no_cabinet_memo_reason', None)
+                tender_number = payload['tender_number']
+                # project_status = payload.get('project_status')
+
+                print(f"Cabinet Memo: {cabinet_memo}, No Cabinet Memo: {no_cabinet_memo}")
+                print(tender_number)
+
+
+                if not no_cabinet_memo:  # If cabinet memo is required
+                  if not cabinet_memo:
+                    return Response({"details": "Cabinet memo is required!"}, status=status.HTTP_400_BAD_REQUEST)
+                 # Additional check for cabinet_memo existence
+                  try:
+                     cabinet_memo = models.CabinetMemo.objects.get(id=cabinet_memo)
+                  except models.CabinetMemo.DoesNotExist:
+                    return Response({"details": "Unknown cabinet memo!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+                
+                mother_id = None
+                
+                ward = location.get('ward')
+                
+                if ward and ward != "N/A":
+                    
+                    try:
+                        ward = location['ward']
+                        ward = models.Ward.objects.get(id=ward)
+                        ward = serializers.FetchWardSerializer(ward,many=False).data
+                        location['ward'] = ward
+                    except Exception as e:
+                        print(e)
+                        return Response({"details": f"Ward is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+
+
+                if type == "SUB":
+                
+                    if not main_project:
+                        return Response({"details": f"Main Project is required!"}, status=status.HTTP_400_BAD_REQUEST) 
+                    
+                    try:
+                        wave = models.Wave.objects.get(Q(id=main_project))
+                    except (ValidationError, ObjectDoesNotExist):
+                        return Response({"details": "Unknown main project!"}, status=status.HTTP_400_BAD_REQUEST)
+                    
+                    mother_id = main_project
+
+                if type == "MAIN":
+                    if not standalone:
+                        return Response({"details": "Standalone status is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+                        
+                try:
+                    directorate = models.Directorate.objects.get(id=directorate)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": f"Unknown directorate !"}, status=status.HTTP_400_BAD_REQUEST) 
+
+                try:
+                    sub_category = models.ProjectSubCategory.objects.get(id=sub_category)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": f"Unknown sub category !"}, status=status.HTTP_400_BAD_REQUEST) 
+                
+                # Extract request_id from payload or URL
+                request_id = payload.get('request_id')  # Or kwargs.get('request_id') if coming from URL
+
+               # Ensure request_id is present
+                if not request_id:
+                  return Response({"details": "Request ID is required!"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+               
+                
+                # validate lead coach
+                # try:
+                #     lead_coach = get_user_model().objects.get(Q(id=lead_coach))
+                # except Exception as e:
+                #     print(e)
+                #     return Response({"details": "Unknown Lead Coach"}, status=status.HTTP_400_BAD_REQUEST) 
+                
+                with transaction.atomic():
+                    # wave.name = name
+                    # wave.start_date = start_date
+                    # wave.end_date = end_date
+                    # wave.lead_coach = lead_coach
+                    # wave.budget = budget
+                    # wave.location = location
+                    # wave.directorate = directorate
+                    # wave.sub_category = sub_category
+                    # wave.type = type
+                    # wave.mother_id = mother_id
+                    
+                    # wave.save()
+                    raw = {
+                        "name": name,
+                        "start_date": start_date,
+                        "end_date": end_date,
+                        "budget": budget,
+                        "directorate": directorate,
+                        "sub_category": sub_category,
+                        "financial_year":financial_year,
+                        # "cabinet_memo": cabinet_memo,
+                        "cabinet_memo": cabinet_memo if not no_cabinet_memo else None,
+                        "location": location,
+                        "type": type,
+                        "mother_id": mother_id,
+                        "risks": risks,
+                        "results_leaders": results_leaders,
+                        "technical_leaders": technical_leaders,
+                        "strategic_leaders": strategic_leaders,
+                        "standalone": standalone,
+                        "no_cabinet_memo": no_cabinet_memo,  # Update the new field
+                        "no_cabinet_memo_reason": no_cabinet_memo_reason,  # Update the new field
+                        "tender_number": tender_number,
+                        # "project_status": project_status,
+                    }
+                    models.Wave.objects.filter(Q(id=request_id)).update(**raw)
+
+                    return Response("Success", status=status.HTTP_200_OK)
+            else:
+                return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+        elif request.method == "GET":
+            request_id = request.query_params.get('request_id')
+            serializer = request.query_params.get('serializer')
+            project_type = request.query_params.get('project_type')
+            standalone = request.query_params.get('standalone')
+            
+            
+            if request_id:
+                try:
+                    # wave = models.Wave.objects.get(Q(id=request_id))
+                    wave = models.Wave.objects.select_related('cabinet_memo').get(Q(id=request_id))
+                    wave = serializers.FetchWaveSerializer(wave,many=False).data
+                    return Response(wave, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown wave!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif serializer == 'slim':
+                try:
+                    waves = models.Wave.objects.filter().order_by('name')
+                    waves = serializers.SlimFetchWaveSerializer(waves,many=True).data
+                    return Response(waves, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif project_type:
+                try:
+                    if standalone:
+                        waves = models.Wave.objects.filter(Q(type=project_type) & Q(standalone=standalone) & Q(is_deleted=False)).order_by('type')
+                    else:
+                        waves = models.Wave.objects.filter(Q(type=project_type) & Q(is_deleted=False)).order_by('type')
+                    waves = serializers.SlimFetchWaveSerializer(waves,many=True).data
+                    return Response(waves, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                try:                   
+                    queryset= self.get_queryset()
+                    page = self.paginate_queryset(queryset)
+                    serialized_waves = self.get_serializer(page, many=True)
+
+                    return self.get_paginated_response(serialized_waves.data)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                    print(e)
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        elif request.method == "DELETE":
+            request_id = request.query_params.get('request_id')
+            if not request_id:
+                return Response({"details": "Cannot complete request !"}, status=status.HTTP_400_BAD_REQUEST)
+            with transaction.atomic():
+                try:
+                    raw = {"is_deleted" : True}
+                    models.Wave.objects.filter(Q(id=request_id)).update(**raw)
+                    return Response('200', status=status.HTTP_200_OK)     
+                except Exception as e:
+                    return Response({"details": "Unknown Id"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class FoundationViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated,)

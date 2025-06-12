@@ -50,8 +50,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'acl',
-    'api',
-    'cloudinary_storage',
+    'api'
 ]
 
 MIDDLEWARE = [
@@ -83,12 +82,27 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'main.wsgi.app'
+WSGI_APPLICATION = 'main.wsgi.application'
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.getenv('DBNAME'),
+#         'USER': os.environ.get('DBUSERNAME'),
+#         'PASSWORD': os.environ.get('DBPASSWORD'),
+#         'ATOMIC_REQUESTS': True,
+#         'OPTIONS': {
+#             'options': '-c search_path={}'.format(os.environ.get('DBSCHEMA'))
+#         },
+#         'HOST': str(os.environ.get('DBHOST')),
+#         'PORT': int(os.environ.get('DBPORT')),
+
+#     }
+# }
 
 tmpPostgres = urlparse(os.getenv("DATABASE_URL"))
 
@@ -102,7 +116,6 @@ DATABASES = {
         'PORT': 5432,
     }
 }
-
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
 
@@ -191,12 +204,8 @@ STATIC_URL = '/static/'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.getenv('CLOUD_NAME'),
-    'API_KEY': os.getenv('API_KEY'),
-    'API_SECRET': os.getenv('API_SECRET')
-}
+
+
 STATIC_PATH = os.path.join(PROJECT_ROOT, 'staticfiles')
 STATICFILES_DIRS = (STATIC_PATH,)
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -209,13 +218,13 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
-    )
+    ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 10
 }
 
 X_FRAME_OPTIONS = 'ALLOW-FROM https://127.0.0.1/'
-CORS_ALLOWED_ORIGINS = [
-    'https://defe-2.vercel.app'
-]
+
 TOKEN_SECRET_CODE = 'county47?Refined'
 TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
 
@@ -231,53 +240,7 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
-    'Access-Control-Allow-Origin',    
+    'Access-Control-Allow-Origin',
 ]
-# myproject/settings.py
 
-# X_FRAME_OPTIONS: For clickjacking protection. 'DENY' is usually good for APIs.
-# If you genuinely need to allow embedding, research more advanced solutions.
-# X_FRAME_OPTIONS = 'DENY'
-
-# # CORS_ALLOWED_ORIGINS: List of origins allowed to make cross-origin requests.
-# # Ensure this exactly matches your frontend's deployed URL.
-# CORS_ALLOWED_ORIGINS = [
-#     'https://defe-2.vercel.app',
-#     # Add your local development frontend URL if applicable, e.g.:
-#     # 'http://localhost:3000',
-#     # 'http://127.0.0.1:3000',
-# ]
-
-# CORS_ORIGIN_ALLOW_ALL: Set to False (or remove, as False is default)
-# if you are using CORS_ALLOWED_ORIGINS to specify allowed domains.
-# ONLY set to True if you want to allow any origin (less secure).
-# CORS_ORIGIN_ALLOW_ALL = False # <--- Set this to False!
-
-# # TOKEN_SECRET_CODE and TOKEN_EXPIRY are fine, unrelated to CORS.
-# TOKEN_SECRET_CODE = 'county47?Refined'
-# TOKEN_EXPIRY = int(os.getenv('TOKEN_EXPIRY_TIME'))
-
-# # CORS_ALLOW_HEADERS: List of non-standard HTTP request headers that the client is allowed to send.
-# # 'authorization' is crucial if you're sending tokens (e.g., Bearer tokens).
-# CORS_ALLOW_HEADERS = [
-#     'accept',
-#     'accept-encoding',
-#     'authorization', # This covers both 'Authorization' and 'authorization'
-#     'content-type',
-#     'dnt',
-#     'origin',
-#     'user-agent',
-#     'x-csrftoken',
-#     'x-requested-with',
-#     # !!! IMPORTANT: The line below was incorrect and has been removed !!!
-#     # 'Access-Control-Allow-Origin: https://defe-2.vercel.app/',
-# ]
-
-# If you're using JWT or other token-based auth, you might also need:
-CORS_ALLOW_CREDENTIALS = True # Allows cookies/authorization headers to be sent cross-origin
 MAINMEDIA = os.getenv('MAINMEDIA')
-
-# REST_FRAMEWORK = {
-#     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-#     'PAGE_SIZE': 10
-# }
