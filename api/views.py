@@ -24,10 +24,63 @@ from django.db.models import Sum
 import math
 from collections import defaultdict
 
+class WorkPlanViewSet(viewsets.ModelViewSet):
+    queryset = models.ThematicArea.objects.filter(Q(is_deleted=False)).order_by('date_created')
+    serializer_class = serializers.FetchThematicAreaSerializer    
+    permission_classes = (IsAuthenticated,)
+
+    @action(methods=["POST", "GET",  "PUT", "DELETE"],
+            detail=False,
+            url_path="projects_admin",
+            url_name="projects_admin", )
+    def get_project_admin(self, request):
+        request_id = request.query_params.get('request_id')
+        overseer_id = request.query_params.get('overseer_id')
+        project_id = request.query_params.get('project_id')
+        if request_id:
+            try:
+                area = models.ThematicArea.objects.get(Q(id=request_id))
+                area = serializers.FetchThematicAreaSerializer(area,many=False).data
+                return Response(area, status=status.HTTP_200_OK)
+            except (ValidationError, ObjectDoesNotExist):
+                return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                        return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+        if project_id:
+            try:
+                area = models.ThematicArea.objects.filter(Q(project=project_id))
+                area = serializers.FetchThematicAreaSerializer(area,many=True).data
+                return Response(area, status=status.HTTP_200_OK)
+            except (ValidationError, ObjectDoesNotExist):
+                return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                        return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+        elif overseer_id:
+            try:
+                overseer = models.ThematicArea.objects.filter((Q(results_leader=overseer_id) | Q(team_leader=overseer_id) | Q(team_leader=overseer_id)) & Q(is_deleted=False)).order_by('date_created')
+                overseer = serializers.FetchThematicAreaSerializer(overseer,many=True).data
+                return Response(overseer, status=status.HTTP_200_OK)
+            except (ValidationError, ObjectDoesNotExist):
+                return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                        return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                queryset= self.get_queryset()
+                page = self.paginate_queryset(queryset)
+                serialized_waves = self.get_serializer(page, many=True)
+
+                return self.get_paginated_response(serialized_waves.data)
+            except (ValidationError, ObjectDoesNotExist):
+                return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            except Exception as e:
+                        return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+
 class ProjectsViewSet(viewsets.ModelViewSet):
     queryset = models.Wave.objects.filter(is_deleted=False)
     serializer_class = serializers.FetchWaveSerializer
-   
+    permission_classes = (IsAuthenticated,)
 
     @action(methods=["POST", "GET",  "PUT", "DELETE"],
             detail=False,
@@ -413,6 +466,245 @@ class ProjectsViewSet(viewsets.ModelViewSet):
                     return Response('200', status=status.HTTP_200_OK)     
                 except Exception as e:
                     return Response({"details": "Unknown Id"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProjectsGoals(viewsets.ModelViewSet):
+    queryset = models.RRIGoals.objects.filter(is_deleted=False).order_by('id')
+    serializer_class = serializers.FetchRRIGoalsSerializer
+    permission_classes = (IsAuthenticated,)
+
+    @action(methods=["POST", "GET", "PUT", "DELETE"],
+            detail=False,
+            url_path="projects-objectives",
+            url_name="projects-objectives")
+    def rri_goals(self, request):
+        if request.method == "POST":
+            payload = request.data
+            serializer = serializers.CreateRRIGoalsSerializer(
+                data=payload, many=False)
+            if serializer.is_valid():
+                wave = payload['wave']
+                goal = payload['goal']
+                thematic_area = payload['thematic_area']
+                # results_leaders = payload['results_leaders']
+                # technical_leaders = payload['technical_leaders']
+                # strategic_leaders = payload['strategic_leaders']
+
+                # if not results_leaders:
+                #     return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # if not technical_leaders:
+                #     return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # if not strategic_leaders:
+                #     return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    thematic_area = models.ThematicArea.objects.get(Q(id=thematic_area))
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown thematic area!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                try:
+                    wave = models.Wave.objects.get(Q(id=wave))
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown wave!"}, status=status.HTTP_400_BAD_REQUEST)
+                                
+                
+                with transaction.atomic():
+                    raw = {
+                        "wave": wave,
+                        "goal": goal,
+                        # "results_leaders": results_leaders,
+                        # "technical_leaders": technical_leaders,
+                        # "strategic_leaders": strategic_leaders,
+                        "thematic_area": thematic_area,
+                        "creator": request.user,
+                    }
+                    rri = models.RRIGoals.objects.create(**raw)
+
+                    team_members = payload['team_members']
+                    if team_members:
+                        if isinstance(team_members, list):
+                            for member in team_members:
+                                raw = {
+                                    "name": member,
+                                    "goal": rri
+                                }
+                                models.TeamMembers.objects.create(**raw)
+
+                    return Response("Success", status=status.HTTP_200_OK)
+            else:
+                return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+        elif request.method == "PUT":
+            payload = request.data
+            serializer = serializers.UpdateRRIGoalsSerializer(
+                data=payload, many=False)
+            
+            if serializer.is_valid():
+                wave = payload['wave']
+                goal = payload['goal']
+                thematic_area = payload['thematic_area']
+                request_id = payload['request_id']
+                # results_leaders = payload['results_leaders']
+                # technical_leaders = payload['technical_leaders']
+                # strategic_leaders = payload['strategic_leaders']
+
+                # if not results_leaders:
+                #     return Response({"details": "Results Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # if not technical_leaders:
+                #     return Response({"details": "Technical Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                # if not strategic_leaders:
+                #     return Response({"details": "Strategic Leaders required!"}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    rri = models.RRIGoals.objects.get(Q(id=request_id))
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown request!"}, status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    thematic_area = models.ThematicArea.objects.get(Q(id=thematic_area))
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown thematic area!"}, status=status.HTTP_400_BAD_REQUEST)
+                
+                
+                try:
+                    wave = models.Wave.objects.get(Q(id=wave))
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown wave!"}, status=status.HTTP_400_BAD_REQUEST)
+                       
+                
+                with transaction.atomic():
+                    raw = {
+                        "wave": wave,
+                        "goal": goal,
+                        # "results_leaders": results_leaders,
+                        # "technical_leaders": technical_leaders,
+                        # "strategic_leaders": strategic_leaders,
+                        "thematic_area": thematic_area,
+                        "creator": request.user,
+                    }
+                    models.RRIGoals.objects.filter(Q(id=request_id)).update(**raw)
+
+                    # update team members
+                    team_members = payload['team_members']
+                    if team_members:
+                        # delete existing members
+                        models.TeamMembers.objects.filter(Q(goal=request_id)).delete()
+                        # save new members
+                        if isinstance(team_members, list):
+                            for member in team_members:
+                                raw = {
+                                    "name": member,
+                                    "goal": rri
+                                }
+                                models.TeamMembers.objects.create(**raw)
+
+
+                    return Response("Success", status=status.HTTP_200_OK)
+            else:
+                return Response({"details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            
+        elif request.method == "GET":
+            request_id = request.query_params.get('request_id')
+            thematic_area = request.query_params.get('thematic_area')
+            page = request.query_params.get('page')
+            selector = request.query_params.get('selector')
+            serializer = request.query_params.get('serializer')
+
+            roles = user_util.fetchusergroups(request.user.id)  
+
+            if request_id:
+                try:
+                    rri = models.RRIGoals.objects.get(Q(id=request_id))
+                    rri = serializers.FetchRRIGoalsSerializer(rri,many=False).data
+                    return Response(rri, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Unknown Request!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif thematic_area:
+                try:
+                    area = models.RRIGoals.objects.filter(Q(thematic_area=thematic_area)).order_by('date_created')
+                    area = serializers.FetchRRIGoalsSerializer(area,many=True).data
+                    return Response(area, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif serializer == 'slim':
+                try:
+                    area = models.RRIGoals.objects.filter(Q(is_deleted=False)).order_by('goal')
+                    area = serializers.SlimFetchRRIGoalsSerializer(area,many=True).data
+                    return Response(area, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif selector:
+                selector_value = request.query_params.get('selector_value')
+                location_value = request.query_params.get('location_value')
+                location = request.query_params.get('location')
+
+                if not selector_value or not location:
+                    return Response({"details": "Select search criteria !"}, status=status.HTTP_400_BAD_REQUEST)
+                if location != 'all' and not location_value:
+                    return Response({"details": "Select location search criteria !"}, status=status.HTTP_400_BAD_REQUEST)
+
+                if selector == "project":
+                    q_filters = Q(wave__id=selector_value)
+                elif selector == "objective":
+                    q_filters = Q(id=selector_value)
+                
+                q_filters &= Q(is_deleted=False)
+
+                if location == "borough":
+                    q_filters &= Q(wave__location__ward__sub_county__borough__id=location_value)
+                elif location == "sub-county":
+                    q_filters &= Q(wave__location__ward__sub_county__id=location_value)
+                elif location == "ward":
+                    q_filters &= Q(wave__location__ward__id=location_value)
+
+                try:
+                    area = models.RRIGoals.objects.filter(q_filters).order_by('date_created')
+                    area = serializers.FetchRRIGoalsSerializer(area,many=True).data
+                    return Response(area, status=status.HTTP_200_OK)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                try:
+                    if 'EVALUATOR' in roles and page == 'evaluation':
+                        assigned = models.AssignedEvaluations.objects.filter(is_evaluated=False,evaluator=request.user).order_by('date_created')
+                        ids = assigned.values_list('rri_goal__id', flat=True)
+                        area = models.RRIGoals.objects.filter(pk__in=ids).order_by('date_created')
+                        area = serializers.FetchRRIGoalsSerializer(area, many=True, context={"user_id":request.user.id}).data
+                    else:
+                        queryset= self.get_queryset()
+                        page = self.paginate_queryset(queryset)
+                        serialized_objectives = self.get_serializer(page, many=True)
+
+                        return self.get_paginated_response(serialized_objectives.data)
+                except (ValidationError, ObjectDoesNotExist):
+                    return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+                except Exception as e:
+                            return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+
+        elif request.method == "DELETE":
+            request_id = request.query_params.get('request_id')
+            if not request_id:
+                return Response({"details": "Cannot complete request !"}, status=status.HTTP_400_BAD_REQUEST)
+            with transaction.atomic():
+                try:
+                    raw = {"is_deleted" : True}
+                    models.RRIGoals.objects.filter(Q(id=request_id)).update(**raw)
+                    return Response('200', status=status.HTTP_200_OK)     
+                except Exception as e:
+                    return Response({"details": "Unknown Id"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class FoundationViewSet(viewsets.ModelViewSet):
