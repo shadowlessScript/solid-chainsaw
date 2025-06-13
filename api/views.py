@@ -23,6 +23,7 @@ from api.utils import shared_fxns
 from django.db.models import Sum
 import math
 from collections import defaultdict
+# yoo
 
 class WorkPlanViewSet(viewsets.ModelViewSet):
     queryset = models.ThematicArea.objects.filter(Q(is_deleted=False)).order_by('date_created')
