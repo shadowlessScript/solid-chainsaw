@@ -3862,6 +3862,15 @@ class FoundationViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"details": f"An error has occurred {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+    @action(methods=["GET"], detail=False, url_name="tiny-goals", url_path="tiny-goals")
+    def get_goals(self, request):
+        try:
+            goals = models.ThematicArea.objects.filter(Q(is_deleted=False))
+            goals_serialized = serializers.TinyFetchWaveSerializer(goals, many=True).data
+            return Response(goals_serialized, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"details": f"An error has occurred {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
     @action(methods=["GET"], detail=False, url_name="get-project-goal", url_path="get-project-goal")
     def get_project_goal(self, request):
         project = request.query_params.get("project")
