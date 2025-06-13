@@ -614,6 +614,7 @@ class ProjectsGoals(viewsets.ModelViewSet):
             page = request.query_params.get('page')
             selector = request.query_params.get('selector')
             serializer = request.query_params.get('serializer')
+            search_query = request.query_params.get('query')
 
             roles = user_util.fetchusergroups(request.user.id)  
 
@@ -676,6 +677,12 @@ class ProjectsGoals(viewsets.ModelViewSet):
                     return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
                 except Exception as e:
                             return Response({"details": "Cannot complete request at this time!"}, status=status.HTTP_400_BAD_REQUEST)
+            elif search_query:
+                queryset= self.get_queryset().filter(Q(wave__name__icontains=search_query))
+                page = self.paginate_queryset(queryset)
+                serialized_objectives = self.get_serializer(page, many=True)
+
+                return self.get_paginated_response(serialized_objectives.data)
             else:
                 try:
                     if 'EVALUATOR' in roles and page == 'evaluation':
