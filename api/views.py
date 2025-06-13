@@ -3866,7 +3866,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
     def get_goals(self, request):
         try:
             goals = models.ThematicArea.objects.filter(Q(is_deleted=False))
-            goals_serialized = serializers.TinyFetchWaveSerializer(goals, many=True).data
+            goals_serialized = serializers.TinyFetchThematicAreaSerializer(goals, many=True).data
             return Response(goals_serialized, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"details": f"An error has occurred {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
