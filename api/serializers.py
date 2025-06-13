@@ -462,6 +462,10 @@ class FetchThematicAreaSerializer(serializers.ModelSerializer):
         model = api_models.ThematicArea
         fields = '__all__'
 
+class TinyFetchThematicAreaSerializer(serializers.ModelSerializer):
+    class Meta:
+            model = api_models.ThematicArea
+            fields = '__all__'
 
 class CreateRRIGoalsSerializer(serializers.Serializer):
     wave = serializers.CharField(max_length=255)
