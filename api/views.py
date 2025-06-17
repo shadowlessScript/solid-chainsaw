@@ -2267,8 +2267,62 @@ class FoundationViewSet(viewsets.ModelViewSet):
     def get_sub_county_summary(self, request):
         if request.method == 'POST':
             sub_county = request.data.get("subCounty")  # Correct way to access POST data
-            if sub_county:
+            financial_year = request.data.get("financilYear")
+            sector = request.data.get("sector")
+            if sub_county and not financial_year and not sector:
                 get_sub_county = models.Wave.objects.filter(location__ward__sub_county__name=sub_county)
+                budget = []
+                categories = {}
+                for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in categories:
+                            categories[x.sub_category.name] += 1
+                        else:
+                            categories[x.sub_category.name] = 1
+                    budget.append(x.budget)
+                total_budget = sum(budget)
+                output = {
+                    "Number of Projects": len(get_sub_county), 
+                    "Total budget": '{:,}'.format(total_budget)
+                    }
+                for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in output:
+                            output[x.sub_category.name] += 1
+                        else:
+                            output[x.sub_category.name] = 1
+                
+                # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
+                return Response(output, status=status.HTTP_200_OK)
+            elif sub_county and financial_year and not sector:
+                get_sub_county = models.Wave.objects.filter(Q(location__ward__sub_county__name=sub_county) & Q(financial_year__Year=financial_year))
+                budget = []
+                categories = {}
+                for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in categories:
+                            categories[x.sub_category.name] += 1
+                        else:
+                            categories[x.sub_category.name] = 1
+                    budget.append(x.budget)
+                total_budget = sum(budget)
+                output = {
+                    "Number of Projects": len(get_sub_county), 
+                    "Total budget": '{:,}'.format(total_budget)
+                    }
+                for x in get_sub_county:
+                    if x.sub_category:
+                        if x.sub_category.name in output:
+                            output[x.sub_category.name] += 1
+                        else:
+                            output[x.sub_category.name] = 1
+                
+                # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
+                return Response(output, status=status.HTTP_200_OK)
+            elif sub_county and financial_year and sector:
+                get_sub_county = models.Wave.objects.filter(Q(location__ward__sub_county__name=sub_county) 
+                                                            & Q(financial_year__Year=financial_year)
+                                                            &Q(directorate__sub_sector_sector__name=sector))
                 budget = []
                 categories = {}
                 for x in get_sub_county:
@@ -2308,6 +2362,9 @@ class FoundationViewSet(viewsets.ModelViewSet):
             elif requested_status == "Not Started":
                 projects_not_started = models.Wave.objects.filter(project_status = requested_status)
                 result = serializers.ProjectStatusFetchWaveSerializer(projects_not_started, many=True).data
+            elif requested_status == "Completed":
+                completed_projects = models.Wave.objects.filter(project_status = requested_status)
+                result = serializers.ProjectStatusFetchWaveSerializer(completed_projects, many=True).data                
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"details": e}, status=status.HTTP_400_BAD_REQUEST)
@@ -3873,9 +3930,10 @@ class FoundationViewSet(viewsets.ModelViewSet):
         
     @action(methods=["GET"], detail=False, url_name="get-project-goal", url_path="get-project-goal")
     def get_project_goal(self, request):
-        project = request.query_params.get("project")
+        project = request.query_params.get("id")
         try:
-            goal = models.ThematicArea.objects.filter(Q(project=project))
+            goal = models.ThematicArea.objects.filter(Q(project__id=project))
+            print('your goal is', goal)
             return Response(goal.id, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({"detail": "Project goal not found"}, status=status.HTTP_400_BAD_REQUEST)
