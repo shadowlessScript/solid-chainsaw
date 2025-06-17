@@ -69,7 +69,11 @@ class FetchDepartmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = api_models.Department
         fields = '__all__'
-        
+
+class ProjectStatusFetchWaveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = api_models.Wave
+        fields = ["name"]        
 
 class FetchProjectSubCategorySerializer(serializers.ModelSerializer):
     class Meta:

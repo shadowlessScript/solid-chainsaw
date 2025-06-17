@@ -2354,16 +2354,17 @@ class FoundationViewSet(viewsets.ModelViewSet):
     @action(methods=["GET"], detail=False, url_path="get-project-status", url_name="get-project-status")
     def get_projects_status(self,request):
         requested_status = request.query_params.get("status")
+        # print(requested_status)
         try:
             result = ""
             if requested_status == "Stalled":
-                stalled_projects = models.Wave.objects.filter(project_status = requested_status)
+                stalled_projects = models.Wave.objects.filter(Q(is_deleted=False) & Q(project_status = requested_status))
                 result = serializers.ProjectStatusFetchWaveSerializer(stalled_projects, many=True).data
             elif requested_status == "Not Started":
-                projects_not_started = models.Wave.objects.filter(project_status = requested_status)
+                projects_not_started = models.Wave.objects.filter(Q(is_deleted=False) &Q(project_status = requested_status))
                 result = serializers.ProjectStatusFetchWaveSerializer(projects_not_started, many=True).data
             elif requested_status == "Completed":
-                completed_projects = models.Wave.objects.filter(project_status = requested_status)
+                completed_projects = models.Wave.objects.filter(Q(is_deleted=False) & Q(project_status = requested_status))
                 result = serializers.ProjectStatusFetchWaveSerializer(completed_projects, many=True).data                
             return Response(result, status=status.HTTP_200_OK)
         except Exception as e:
@@ -3995,7 +3996,8 @@ class AnalyticsViewSet(viewsets.ViewSet):
         sectors = models.Sector.objects.filter(Q(is_deleted=False)).count()
         subsectors = models.SubSector.objects.filter(Q(is_deleted=False)).count()
         directorates = models.Directorate.objects.filter(Q(is_deleted=False)).count()
-
+        financial_years = serializers.FetchFinancialYearBudgetSerializer(
+            models.BudgetFinancialYear.objects.filter(Q(is_deleted=False)), many=True).data
         resp = {
             "main_projects": main_projects,
             "sub_projects": sub_projects,
@@ -4009,6 +4011,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             "sectors": sectors,
             "subsectors": subsectors,
             "directorates": directorates,
+            "financial_year": financial_years
         }
 
         return Response(resp, status=status.HTTP_200_OK)
