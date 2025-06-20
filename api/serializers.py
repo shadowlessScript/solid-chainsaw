@@ -307,6 +307,14 @@ class TinyFetchWaveSerializer(serializers.ModelSerializer):
         model = api_models.Wave
         fields = '__all__'
 
+class TinyWaveBudgetSerializer(serializers.ModelSerializer):
+    financial_year = FetchFinancialYearBudgetSerializer()
+    sub_category = FetchProjectSubCategorySerializer()
+    class Meta:
+        model = api_models.Wave
+        fields = ("sub_category", "budget", "financial_year")
+
+
 class FetchBoroughProjectsSerializer(serializers.ModelSerializer):
     financial_year = FetchFinancialYearBudgetSerializer()
     sub_category = FetchProjectSubCategorySerializer()

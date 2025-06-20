@@ -2269,6 +2269,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
             sub_county = request.data.get("subCounty")  # Correct way to access POST data
             financial_year = request.data.get("financilYear")
             sector = request.data.get("sector")
+            print(sub_county, financial_year, sector)
             if sub_county and not financial_year and not sector:
                 get_sub_county = models.Wave.objects.filter(location__ward__sub_county__name=sub_county)
                 budget = []
@@ -2316,7 +2317,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
                             output[x.sub_category.name] += 1
                         else:
                             output[x.sub_category.name] = 1
-                
+                print("sub, f,s,",output)
                 # info = serializers.FetchSubCountyProjectsSerializer(get_sub_county, many=True).data
                 return Response(output, status=status.HTTP_200_OK)
             elif sub_county and financial_year and sector:
@@ -3939,6 +3940,17 @@ class FoundationViewSet(viewsets.ModelViewSet):
         except Exception as e:
             return Response({"detail": "Project goal not found"}, status=status.HTTP_400_BAD_REQUEST)
                     
+    @action(methods=["GET"], detail=False, url_name="project-budget-info", url_path="project-budget-info")  
+    def get_project_budget(self, request):
+        try:
+            projects = models.Wave.objects.filter(Q(is_deleted=False))
+            print("done")
+            serialized = serializers.TinyWaveBudgetSerializer(projects, many=True).data
+            # print(serialized)
+            return Response(serialized, status=status.HTTP_200_OK)
+        except Exception as e:
+            print(e)
+            return Response({"details": "Something went wrong"}, status=status.HTTP_400_BAD_REQUEST)
         
 class ReportsViewSet(viewsets.ViewSet):
     permission_classes = (IsAuthenticated,)
@@ -3982,7 +3994,7 @@ class AnalyticsViewSet(viewsets.ViewSet):
             url_path="general",
             url_name="general")
     def general(self, request):
-        main_projects = models.Wave.objects.filter(Q(type="MAIN") & Q(is_deleted=False)).count()
+        main_projects = models.Wave.objects.filter(Q(is_deleted=False)).count()
         sub_projects = models.Wave.objects.filter(Q(type="SUB") & Q(is_deleted=False)).count()
         objectives = models.RRIGoals.objects.filter(Q(is_deleted=False)).count()
         goals = models.ThematicArea.objects.filter(Q(is_deleted=False)).count()
