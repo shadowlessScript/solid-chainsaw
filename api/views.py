@@ -2394,7 +2394,7 @@ class FoundationViewSet(viewsets.ModelViewSet):
         sector = request.query_params.get("sector")  
         need_completion = request.query_params.get("completion")
         if sector and not need_completion:
-            get_sector_projects = models.Wave.objects.filter(directorate__sub_sector__sector__name=sector)            
+            get_sector_projects = models.Wave.objects.filter(Q(directorate__sub_sector__sector__name=sector) & Q(is_deleted=False))            
             info = serializers.FetchBoroughProjectsSerializer(get_sector_projects, many=True).data
             return Response(info, status=status.HTTP_200_OK)
         elif need_completion and sector:
